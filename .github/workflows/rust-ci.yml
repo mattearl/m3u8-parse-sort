@@ -12,11 +12,9 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+  # Job for building, running tests, and linting on Linux
+  build-and-test-linux:
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
 
@@ -31,6 +29,18 @@ jobs:
 
     - name: Run tests
       run: cargo test --release --verbose
+
+  # Job for building and packaging on Linux, Windows, and macOS
+  build-and-package:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Build
+      run: cargo build --release --verbose
 
     - name: Package application
       run: |
