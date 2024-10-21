@@ -8,7 +8,7 @@
 use crate::errors::PlaylistError;
 use nom::{
     bytes::complete::tag,
-    character::complete::{line_ending, multispace0, not_line_ending, space0},
+    character::complete::{line_ending, multispace0, not_line_ending},
     combinator::opt,
     multi::separated_list1,
     sequence::separated_pair,
@@ -248,6 +248,7 @@ fn parse_master_playlist(input: &str) -> IResult<&str, MasterPlaylist> {
             // Skip over any unrecognized or non-relevant tags or lines
             let (new_input, _) = not_line_ending(input)?;
             let (new_input, _) = line_ending(new_input)?;
+            let (new_input, _) = multispace0(new_input)?;
             input = new_input;
         }
     }
@@ -264,6 +265,7 @@ fn parse_master_playlist(input: &str) -> IResult<&str, MasterPlaylist> {
 }
 
 fn parse_stream_variant(input: &str) -> IResult<&str, StreamVariant> {
+    let (input, _) = multispace0(input)?; // Consume any whitespace (spaces, tabs, newlines) before the tag
     let (input, _) = tag("#EXT-X-STREAM-INF:")(input)?;
 
     // Parse until the end of the line, then handle key-value pairs
@@ -313,8 +315,10 @@ fn parse_stream_variant(input: &str) -> IResult<&str, StreamVariant> {
     }
 
     // Now parse the URI, which comes after the key-value section and a newline
-    let (input, _) = line_ending(input)?; // Consume the newline
+    let (input, _) = multispace0(input)?; // Consume any whitespace (spaces, tabs, newlines) before the uri
     let (input, uri) = parse_uri(input)?; // Parse the URI
+
+    let (input, _) = multispace0(input)?; // Consume any whitespace (spaces, tabs, newlines) before the tag
 
     stream_variant.uri = uri;
 
@@ -322,6 +326,7 @@ fn parse_stream_variant(input: &str) -> IResult<&str, StreamVariant> {
 }
 
 fn parse_media_track(input: &str) -> IResult<&str, MediaTrack> {
+    let (input, _) = multispace0(input)?; // Consume any whitespace (spaces, tabs, newlines) before the tag
     let (input, _) = tag("#EXT-X-MEDIA:")(input)?;
 
     // Split the input into key-value pairs by commas
@@ -329,6 +334,8 @@ fn parse_media_track(input: &str) -> IResult<&str, MediaTrack> {
         tag(","),
         separated_pair(parse_key, tag("="), parse_quoted_or_unquoted_string),
     )(input)?;
+
+    let (input, _) = multispace0(input)?; // Consume any whitespace (spaces, tabs, newlines) after the tag
 
     // Accumulate the key-value pairs into a MediaTrack struct
     let mut track = MediaTrack {
@@ -360,10 +367,13 @@ fn parse_media_track(input: &str) -> IResult<&str, MediaTrack> {
 }
 
 fn parse_iframe_stream(input: &str) -> IResult<&str, IFrameStream> {
+    let (input, _) = multispace0(input)?; // Consume any whitespace (spaces, tabs, newlines) before the tag
     let (input, _) = tag("#EXT-X-I-FRAME-STREAM-INF:")(input)?;
 
     // Parse until the end of the line, then handle key-value pairs
     let (input, key_value_section) = not_line_ending(input)?; // Capture the line without consuming the newline
+
+    let (input, _) = multispace0(input)?; // Consume any whitespace (spaces, tabs, newlines) after the tag
 
     // Parse the key-value pairs from the line
     let (_, key_value_pairs) = separated_list1(
@@ -403,17 +413,16 @@ fn parse_iframe_stream(input: &str) -> IResult<&str, IFrameStream> {
 }
 
 fn parse_extm3u(input: &str) -> IResult<&str, ()> {
-    // Consume any whitespace (spaces, tabs, newlines) before the tag
-    let (input, _) = multispace0(input)?;
+    let (input, _) = multispace0(input)?; // Consume any whitespace (spaces, tabs, newlines) before the tag
     let (input, _) = tag("#EXTM3U")(input)?;
-    let (input, _) = space0(input)?; // Consume any trailing whitespace
-    let (input, _) = line_ending(input)?; // Consume the newline after the tag
+    let (input, _) = multispace0(input)?; // Consume any whitespace (spaces, tabs, newlines) after the tag
     Ok((input, ()))
 }
 
 fn parse_ext_x_independent_segments(input: &str) -> IResult<&str, ()> {
+    let (input, _) = multispace0(input)?; // Consume any whitespace (spaces, tabs, newlines) before the tag
     let (input, _) = tag("#EXT-X-INDEPENDENT-SEGMENTS")(input)?;
-    let (input, _) = line_ending(input)?; // Consume the newline after the tag
+    let (input, _) = multispace0(input)?; // Consume any whitespace (spaces, tabs, newlines) after the tag
     Ok((input, ()))
 }
 
