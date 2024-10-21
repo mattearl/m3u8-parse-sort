@@ -44,7 +44,7 @@ jobs:
 
     - name: Package for macOS
       if: runner.os == 'macOS'
-      run: tar -czvf m3u8-parse-sort-macos.tar.gz -C target/universal-apple-darwin/release m3u8-parse-sort
+      run: tar -czvf m3u8-parse-sort-macos.tar.gz -C target/release m3u8-parse-sort
 
     - name: Package for Linux
       if: runner.os == 'Linux'
