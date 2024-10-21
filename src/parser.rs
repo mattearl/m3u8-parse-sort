@@ -381,6 +381,8 @@ fn parse_iframe_stream(input: &str) -> IResult<&str, IFrameStream> {
         separated_pair(parse_key, tag("="), parse_quoted_or_unquoted_string),
     )(key_value_section)?;
 
+    let (input, _) = multispace0(input)?; // Consume any whitespace (spaces, tabs, newlines) after the tag
+
     // Initialize the IFrameStream struct with default values
     let mut iframe_stream = IFrameStream {
         bandwidth: 0,
@@ -442,6 +444,7 @@ fn parse_key(input: &str) -> IResult<&str, String> {
 
 /// Helper function to parse either quoted or unquoted strings
 fn parse_quoted_or_unquoted_string(input: &str) -> IResult<&str, String> {
+    let (input, _) = multispace0(input)?; // Consume any whitespace (spaces, tabs, newlines) before the tag
     if input.starts_with('"') {
         parse_quoted_string(input)
     } else {
@@ -454,7 +457,8 @@ fn parse_quoted_string(input: &str) -> IResult<&str, String> {
     let (input, _) = tag("\"")(input)?;
     let (input, value) = nom::bytes::complete::is_not("\"")(input)?;
     let (input, _) = tag("\"")(input)?;
-    Ok((input, value.to_string()))
+    let (input, _) = multispace0(input)?; // Consume any whitespace (spaces, tabs, newlines) after the tag
+    Ok((input, value.trim().to_string()))
 }
 
 /// Parse unquoted strings (no quotes around them)
