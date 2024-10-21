@@ -42,19 +42,36 @@ jobs:
     - name: Build
       run: cargo build --release --verbose
 
-    - name: Package application
-      run: |
-        if [[ "$RUNNER_OS" == "Linux" ]]; then
-          tar -czvf m3u8-parse-sort-linux.tar.gz target/release/m3u8-parse-sort
-        elif [[ "$RUNNER_OS" == "Windows" ]]; then
-          7z a m3u8-parse-sort-windows.zip target/release/m3u8-parse-sort.exe
-        else
-          tar -czvf m3u8-parse-sort-macos.tar.gz target/release/m3u8-parse-sort
-        fi
+    - name: Package for Linux
+      if: runner.os == 'Linux'
+      run: tar -czvf m3u8-parse-sort-linux.tar.gz -C target/release m3u8-parse-sort
 
-    - name: Upload artifact
+    - name: Package for Windows
+      if: runner.os == 'Windows'
+      run: 7z a m3u8-parse-sort-windows.zip target/release/m3u8-parse-sort.exe -r -y -ttar
+
+    - name: Package for macOS
+      if: runner.os == 'macOS'
+      run: tar -czvf m3u8-parse-sort-macos.tar.gz -C target/release m3u8-parse-sort
+
+    # Separate upload steps for each OS to ensure proper file handling
+    - name: Upload Linux artifact
+      if: runner.os == 'Linux'
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ runner.os }}-build
-        path: |
-          ${{ runner.os == 'Linux' && 'm3u8-parse-sort-linux.tar.gz' || runner.os == 'Windows' && 'm3u8-parse-sort-windows.zip' || 'm3u8-parse-sort-macos.tar.gz' }}
+        name: linux-build
+        path: m3u8-parse-sort-linux.tar.gz
+
+    - name: Upload Windows artifact
+      if: runner.os == 'Windows'
+      uses: actions/upload-artifact@v4
+      with:
+        name: windows-build
+        path: m3u8-parse-sort-windows.zip
+
+    - name: Upload macOS artifact
+      if: runner.os == 'macOS'
+      uses: actions/upload-artifact@v4
+      with:
+        name: macos-build
+        path: m3u8-parse-sort-macos.tar.gz
