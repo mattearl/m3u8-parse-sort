@@ -433,8 +433,10 @@ fn parse_uri(input: &str) -> IResult<&str, String> {
 
 /// Helper function to parse the key part of a key-value pair
 fn parse_key(input: &str) -> IResult<&str, String> {
+    let (input, _) = multispace0(input)?; // Consume any whitespace (spaces, tabs, newlines) before the tag
     let (input, key) =
         nom::bytes::complete::take_while1(|c: char| c.is_alphanumeric() || c == '-')(input)?;
+    let (input, _) = multispace0(input)?; // Consume any whitespace (spaces, tabs, newlines) after the tag
     Ok((input, key.to_string()))
 }
 
