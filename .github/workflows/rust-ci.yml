@@ -1,0 +1,52 @@
+name: Build and Package
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  pull_request_target:
+    branches: [ "master" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Check code style
+      run: cargo fmt --all -- --check
+
+    - name: Lint code
+      run: cargo clippy -- -D warnings
+
+    - name: Build
+      run: cargo build --release --verbose
+
+    - name: Run tests
+      run: cargo test --release --verbose
+
+    - name: Package application
+      run: |
+        if [[ "$RUNNER_OS" == "Linux" ]]; then
+          tar -czvf m3u8-parse-sort-linux.tar.gz target/release/m3u8-parse-sort
+        elif [[ "$RUNNER_OS" == "Windows" ]]; then
+          7z a m3u8-parse-sort-windows.zip target/release/m3u8-parse-sort.exe
+        else
+          tar -czvf m3u8-parse-sort-macos.tar.gz target/release/m3u8-parse-sort
+        fi
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ runner.os }}-build
+        path: |
+          m3u8-parse-sort-linux.tar.gz
+          m3u8-parse-sort-windows.zip
+          m3u8-parse-sort-macos.tar.gz
