@@ -265,11 +265,9 @@ fn parse_master_playlist(input: &str) -> IResult<&str, MasterPlaylist> {
 }
 
 fn parse_stream_variant(input: &str) -> IResult<&str, StreamVariant> {
-    let (input, _) = multispace0(input)?; // Consume any whitespace (spaces, tabs, newlines) before the tag
+    let (input, _) = multispace0(input)?;
     let (input, _) = tag("#EXT-X-STREAM-INF:")(input)?;
-
-    // Parse until the end of the line, then handle key-value pairs
-    let (input, key_value_section) = not_line_ending(input)?; // Capture the line without consuming the newline
+    let (input, key_value_section) = not_line_ending(input)?; // Parse until the end of the line, then handle key-value pairs
 
     // Parse the key-value pairs from the line
     let (_, key_value_pairs) = separated_list1(
@@ -315,10 +313,9 @@ fn parse_stream_variant(input: &str) -> IResult<&str, StreamVariant> {
     }
 
     // Now parse the URI, which comes after the key-value section and a newline
-    let (input, _) = multispace0(input)?; // Consume any whitespace (spaces, tabs, newlines) before the uri
-    let (input, uri) = parse_uri(input)?; // Parse the URI
-
-    let (input, _) = multispace0(input)?; // Consume any whitespace (spaces, tabs, newlines) before the tag
+    let (input, _) = multispace0(input)?;
+    let (input, uri) = parse_uri(input)?;
+    let (input, _) = multispace0(input)?;
 
     stream_variant.uri = uri;
 
@@ -326,7 +323,7 @@ fn parse_stream_variant(input: &str) -> IResult<&str, StreamVariant> {
 }
 
 fn parse_media_track(input: &str) -> IResult<&str, MediaTrack> {
-    let (input, _) = multispace0(input)?; // Consume any whitespace (spaces, tabs, newlines) before the tag
+    let (input, _) = multispace0(input)?;
     let (input, _) = tag("#EXT-X-MEDIA:")(input)?;
 
     // Split the input into key-value pairs by commas
@@ -335,7 +332,7 @@ fn parse_media_track(input: &str) -> IResult<&str, MediaTrack> {
         separated_pair(parse_key, tag("="), parse_quoted_or_unquoted_string),
     )(input)?;
 
-    let (input, _) = multispace0(input)?; // Consume any whitespace (spaces, tabs, newlines) after the tag
+    let (input, _) = multispace0(input)?;
 
     // Accumulate the key-value pairs into a MediaTrack struct
     let mut track = MediaTrack {
@@ -367,13 +364,10 @@ fn parse_media_track(input: &str) -> IResult<&str, MediaTrack> {
 }
 
 fn parse_iframe_stream(input: &str) -> IResult<&str, IFrameStream> {
-    let (input, _) = multispace0(input)?; // Consume any whitespace (spaces, tabs, newlines) before the tag
+    let (input, _) = multispace0(input)?;
     let (input, _) = tag("#EXT-X-I-FRAME-STREAM-INF:")(input)?;
-
-    // Parse until the end of the line, then handle key-value pairs
-    let (input, key_value_section) = not_line_ending(input)?; // Capture the line without consuming the newline
-
-    let (input, _) = multispace0(input)?; // Consume any whitespace (spaces, tabs, newlines) after the tag
+    let (input, key_value_section) = not_line_ending(input)?; // Parse until the end of the line, then handle key-value pairs
+    let (input, _) = multispace0(input)?;
 
     // Parse the key-value pairs from the line
     let (_, key_value_pairs) = separated_list1(
@@ -381,7 +375,7 @@ fn parse_iframe_stream(input: &str) -> IResult<&str, IFrameStream> {
         separated_pair(parse_key, tag("="), parse_quoted_or_unquoted_string),
     )(key_value_section)?;
 
-    let (input, _) = multispace0(input)?; // Consume any whitespace (spaces, tabs, newlines) after the tag
+    let (input, _) = multispace0(input)?;
 
     // Initialize the IFrameStream struct with default values
     let mut iframe_stream = IFrameStream {
@@ -415,16 +409,16 @@ fn parse_iframe_stream(input: &str) -> IResult<&str, IFrameStream> {
 }
 
 fn parse_extm3u(input: &str) -> IResult<&str, ()> {
-    let (input, _) = multispace0(input)?; // Consume any whitespace (spaces, tabs, newlines) before the tag
+    let (input, _) = multispace0(input)?;
     let (input, _) = tag("#EXTM3U")(input)?;
-    let (input, _) = multispace0(input)?; // Consume any whitespace (spaces, tabs, newlines) after the tag
+    let (input, _) = multispace0(input)?;
     Ok((input, ()))
 }
 
 fn parse_ext_x_independent_segments(input: &str) -> IResult<&str, ()> {
-    let (input, _) = multispace0(input)?; // Consume any whitespace (spaces, tabs, newlines) before the tag
+    let (input, _) = multispace0(input)?;
     let (input, _) = tag("#EXT-X-INDEPENDENT-SEGMENTS")(input)?;
-    let (input, _) = multispace0(input)?; // Consume any whitespace (spaces, tabs, newlines) after the tag
+    let (input, _) = multispace0(input)?;
     Ok((input, ()))
 }
 
@@ -435,16 +429,16 @@ fn parse_uri(input: &str) -> IResult<&str, String> {
 
 /// Helper function to parse the key part of a key-value pair
 fn parse_key(input: &str) -> IResult<&str, String> {
-    let (input, _) = multispace0(input)?; // Consume any whitespace (spaces, tabs, newlines) before the tag
+    let (input, _) = multispace0(input)?;
     let (input, key) =
         nom::bytes::complete::take_while1(|c: char| c.is_alphanumeric() || c == '-')(input)?;
-    let (input, _) = multispace0(input)?; // Consume any whitespace (spaces, tabs, newlines) after the tag
+    let (input, _) = multispace0(input)?;
     Ok((input, key.to_string()))
 }
 
 /// Helper function to parse either quoted or unquoted strings
 fn parse_quoted_or_unquoted_string(input: &str) -> IResult<&str, String> {
-    let (input, _) = multispace0(input)?; // Consume any whitespace (spaces, tabs, newlines) before the tag
+    let (input, _) = multispace0(input)?;
     if input.starts_with('"') {
         parse_quoted_string(input)
     } else {
@@ -457,7 +451,7 @@ fn parse_quoted_string(input: &str) -> IResult<&str, String> {
     let (input, _) = tag("\"")(input)?;
     let (input, value) = nom::bytes::complete::is_not("\"")(input)?;
     let (input, _) = tag("\"")(input)?;
-    let (input, _) = multispace0(input)?; // Consume any whitespace (spaces, tabs, newlines) after the tag
+    let (input, _) = multispace0(input)?;
     Ok((input, value.trim().to_string()))
 }
 
@@ -465,7 +459,7 @@ fn parse_quoted_string(input: &str) -> IResult<&str, String> {
 fn parse_unquoted_string(input: &str) -> IResult<&str, String> {
     // Parse any string until a comma or end of input
     let (input, value) = nom::bytes::complete::is_not(",")(input)?;
-    Ok((input, value.trim().to_string())) // Trim any surrounding whitespace
+    Ok((input, value.trim().to_string()))
 }
 
 #[cfg(test)]
