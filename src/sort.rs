@@ -180,6 +180,17 @@ mod tests {
         );
     }
 
+    #[test]
+    fn test_sorted_chaos_playlist() {
+        test_sort_playlist(
+            "chaos_parse_test.m3u8",
+            "expected_chaos_parse_test.m3u8",
+            (SortStreamBy::Bandwidth, SortStreamBy::Bandwidth),
+            (SortMediaBy::GroupId, SortMediaBy::GroupId),
+            (SortIFrameBy::Bandwidth, SortIFrameBy::Bandwidth),
+        );
+    }
+
     fn test_sort_playlist(
         input_file: &str,
         expected_file: &str,

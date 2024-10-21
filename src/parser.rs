@@ -8,7 +8,7 @@
 use crate::errors::PlaylistError;
 use nom::{
     bytes::complete::tag,
-    character::complete::{line_ending, not_line_ending},
+    character::complete::{line_ending, multispace0, not_line_ending, space0},
     combinator::opt,
     multi::separated_list1,
     sequence::separated_pair,
@@ -403,7 +403,10 @@ fn parse_iframe_stream(input: &str) -> IResult<&str, IFrameStream> {
 }
 
 fn parse_extm3u(input: &str) -> IResult<&str, ()> {
+    // Consume any whitespace (spaces, tabs, newlines) before the tag
+    let (input, _) = multispace0(input)?;
     let (input, _) = tag("#EXTM3U")(input)?;
+    let (input, _) = space0(input)?; // Consume any trailing whitespace
     let (input, _) = line_ending(input)?; // Consume the newline after the tag
     Ok((input, ()))
 }
