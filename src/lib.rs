@@ -43,7 +43,7 @@
 //! use m3u8_parse_sort::sort::{SortStreamBy, get_sort_order};
 //!
 //! fn sort_playlist_by_bandwidth_and_resolution(mut playlist: MasterPlaylist) {
-//!     let sort_order = get_sort_order(&[SortStreamBy::Bandwidth, SortStreamBy::Resolution]);
+//!     let sort_order = (SortStreamBy::Bandwidth, SortStreamBy::Resolution);
 //!     playlist.sort_stream(sort_order);
 //!     println!("Sorted playlist by bandwidth and resolution");
 //! }
@@ -68,7 +68,7 @@
 //!     let mut playlist = fetch_playlist(location).await?;
 //!
 //!     // Sort playlist by bandwidth and codecs
-//!     let sort_order = get_sort_order(&[SortStreamBy::Bandwidth, SortStreamBy::Codecs]);
+//!     let sort_order = (SortStreamBy::Bandwidth, SortStreamBy::Codecs);
 //!     playlist.sort_stream(sort_order);
 //!
 //!     // Save sorted playlist to a file

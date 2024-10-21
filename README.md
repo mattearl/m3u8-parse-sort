@@ -1,8 +1,8 @@
-# HLS Playlist Parse and Sorter
+# HLS Playlist Parse and Sort
 
 ## Overview
 
-The **HLS Playlist Parse and Sorter** is a command-line application and library written in Rust. It provides functionality to fetch, parse, and sort M3U8 master playlists. The application allows you to sort streams, media tracks, and I-frame streams by multiple criteria, such as bandwidth, resolution, codecs, and more.
+The **HLS Playlist Parse and Sort** is a command-line application and library written in Rust. It provides functionality to fetch, parse, and sort M3U8 master playlists. The application allows you to sort stream variants, media tracks, and I-Frame streams by multiple criteria, such as bandwidth, resolution, codecs, and more.
 
 ### Key Features
 
@@ -16,7 +16,7 @@ The underlying functionality is also exposed as a library, making it easy to int
 
 ## CLI Usage
 
-The **HLS Playlist Parse and Sorter** allows sorting HLS playlists directly from the command line. It supports sorting streams, media, and I-frame streams by primary and secondary attributes.
+The **HLS Playlist Parse and Sort** allows sorting HLS playlists directly from the command line. It supports sorting stream variants, media tracks, and I-Frame streams by primary and secondary attributes.
 
 ### CLI Help
 
@@ -66,7 +66,7 @@ m3u8-parse-sort /path/to/playlist.m3u8 --sort-stream-by audio,bandwidth
 m3u8-parse-sort /path/to/playlist.m3u8 --sort-media-by group-id,channels
 ```
 
-### Sorting I-frame Streams by Bandwidth and Resolution
+### Sorting I-Frame Streams by Bandwidth and Resolution
 
 ```sh
 m3u8-parse-sort /path/to/playlist.m3u8 --sort-iframe-by bandwidth,resolution
@@ -110,8 +110,8 @@ async fn main() {
     let playlist_url = "http://example.com/playlist.m3u8";
     match fetch_playlist(playlist_url).await {
         Ok(mut playlist) => {
-            // Sort streams by bandwidth and resolution
-            let sort_order = get_sort_order(&[SortStreamBy::Bandwidth, SortStreamBy::Resolution]);
+            // Sort stream variants by bandwidth and resolution
+            let sort_order = (SortStreamBy::Bandwidth, SortStreamBy::Resolution);
             playlist.sort_stream(sort_order);
 
             println!("Playlist sorted successfully!");
