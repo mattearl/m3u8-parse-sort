@@ -1,6 +1,6 @@
 //! This module provides sorting functionalities for M3U8 Master Playlists,
-//! allowing sorting of streams, media tracks, and I-frame streams by 
-//! various criteria. The sorting is done by primary and secondary sorting 
+//! allowing sorting of streams, media tracks, and I-frame streams by
+//! various criteria. The sorting is done by primary and secondary sorting
 //! criteria defined by enum variants.
 
 use crate::parser::MasterPlaylist;
@@ -47,7 +47,7 @@ pub enum SortIFrameBy {
 }
 
 impl MasterPlaylist {
-    /// Sorts the stream variants within the playlist using primary and 
+    /// Sorts the stream variants within the playlist using primary and
     /// secondary sorting criteria.
     pub fn sort_stream(&mut self, sort_by: (SortStreamBy, SortStreamBy)) {
         self.variants.sort_by(|a, b| {
@@ -60,7 +60,7 @@ impl MasterPlaylist {
         });
     }
 
-    /// Sorts the media tracks within the playlist using primary and 
+    /// Sorts the media tracks within the playlist using primary and
     /// secondary sorting criteria.
     pub fn sort_media(&mut self, sort_by: (SortMediaBy, SortMediaBy)) {
         self.media.sort_by(|a, b| {
@@ -73,7 +73,7 @@ impl MasterPlaylist {
         });
     }
 
-    /// Sorts the I-frame streams within the playlist using primary and 
+    /// Sorts the I-frame streams within the playlist using primary and
     /// secondary sorting criteria.
     pub fn sort_iframe(&mut self, sort_by: (SortIFrameBy, SortIFrameBy)) {
         self.frames.sort_by(|a, b| {
@@ -86,7 +86,7 @@ impl MasterPlaylist {
         });
     }
 
-    /// Comparison logic for stream variants. 
+    /// Comparison logic for stream variants.
     fn compare_stream(
         a: &StreamVariant,
         b: &StreamVariant,
@@ -108,7 +108,7 @@ impl MasterPlaylist {
         }
     }
 
-    /// Comparison logic for media tracks. 
+    /// Comparison logic for media tracks.
     fn compare_media(a: &MediaTrack, b: &MediaTrack, sort_by: SortMediaBy) -> std::cmp::Ordering {
         match sort_by {
             SortMediaBy::Type => a.track_type.cmp(&b.track_type),
@@ -122,7 +122,7 @@ impl MasterPlaylist {
         }
     }
 
-    /// Comparison logic for I-frame streams. 
+    /// Comparison logic for I-frame streams.
     fn compare_iframe(
         a: &IFrameStream,
         b: &IFrameStream,
@@ -142,7 +142,7 @@ impl MasterPlaylist {
 ///
 /// # Parameters
 /// - `sort_order`: A slice of sorting criteria.
-/// 
+///
 /// # Returns
 /// A tuple with the primary and secondary sorting criteria. Defaults are
 /// used if not provided.

@@ -1,7 +1,7 @@
 //! This file defines the structure and functionality for parsing and managing M3U8 master playlists.
-//! It provides parsing utilities for various tags, including stream variants, media tracks, 
+//! It provides parsing utilities for various tags, including stream variants, media tracks,
 //! and I-frame streams, and allows serializing these structures back to a playlist format.
-//! 
+//!
 //! For more detailed documentation on the playlist format and the tags used, refer to:
 //! https://datatracker.ietf.org/doc/html/rfc8216
 
@@ -12,7 +12,7 @@ use nom::{
     combinator::opt,
     multi::separated_list1,
     sequence::separated_pair,
-    IResult, 
+    IResult,
 };
 use nom::{error::Error as NomError, Err as NomErr};
 use std::{
@@ -33,7 +33,7 @@ pub struct MasterPlaylist {
 /// The EXT-X-STREAM-INF tag specifies a Variant Stream, which is a set
 /// of Renditions that can be combined to play the presentation.  The
 /// attributes of the tag provide information about the Variant Stream.
-/// 
+///
 /// The URI line specifies a Media Playlist that carries a Rendition of
 /// the Variant Stream.  
 #[derive(Debug)]
@@ -50,7 +50,7 @@ pub struct StreamVariant {
 }
 
 /// The EXT-X-MEDIA tag is used to relate Media Playlists that contain
-/// alternative Renditions of the same content.  For example, three 
+/// alternative Renditions of the same content.  For example, three
 /// EXT-X-MEDIA tags can be used to identify audio-only Media Playlists
 /// that contain English, French, and Spanish Renditions of the same
 /// presentation.  Or, two EXT-X-MEDIA tags can be used to identify
@@ -452,8 +452,8 @@ fn parse_unquoted_string(input: &str) -> IResult<&str, String> {
 
 #[cfg(test)]
 mod tests {
-    use std::{fs, path::PathBuf};
     use super::*;
+    use std::{fs, path::PathBuf};
 
     #[test]
     fn test_parse_media_track_round_trip() {
